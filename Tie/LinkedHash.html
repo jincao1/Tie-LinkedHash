@@ -1,0 +1,193 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Pod::HtmlEasy/0.07 Perl/5.016003 [MSWin32]">
+<title>LinkedHash.pm</title>
+<style type="text/css">
+<!--
+
+BODY {
+  background: white;
+  color: black;
+  font-family: arial,sans-serif;
+  margin: 0;
+  padding: 1ex;
+}
+TABLE {
+  border-collapse: collapse;
+  border-spacing: 0;
+  border-width: 0;
+  color: inherit;
+}
+IMG { border: 0; }
+FORM { margin: 0; }
+input { margin: 2px; }
+A.fred {
+  text-decoration: none;
+}
+A:link, A:visited {
+  background: transparent;
+  color: #006699;
+}
+TD {
+  margin: 0;
+  padding: 0;
+}
+DIV {
+  border-width: 0;
+}
+DT {
+  margin-top: 1em;
+}
+TH {
+  background: #bbbbbb;
+  color: inherit;
+  padding: 0.4ex 1ex;
+  text-align: left;
+}
+TH A:link, TH A:visited {
+  background: transparent;
+  color: black;
+}
+A.m:link, A.m:visited {
+  background: #006699;
+  color: white;
+  font: bold 10pt Arial,Helvetica,sans-serif;
+  text-decoration: none;
+}
+A.o:link, A.o:visited {
+  background: #006699;
+  color: #ccffcc;
+  font: bold 10pt Arial,Helvetica,sans-serif;
+  text-decoration: none;
+}
+A.o:hover {
+  background: transparent;
+  color: #ff6600;
+  text-decoration: underline;
+}
+A.m:hover {
+  background: transparent;
+  color: #ff6600;
+  text-decoration: underline;
+}
+table.dlsip     {
+  background: #dddddd;
+  border: 0.4ex solid #dddddd;
+}
+.pod PRE     {
+  background: #eeeeee;
+  border: 1px solid #888888;
+  color: black;
+  padding-top: 1em;
+  white-space: pre;
+}
+.pod H1      {
+  background: transparent;
+  color: #006699;
+  font-size: large;
+}
+.pod H2      {
+  background: transparent;
+  color: #006699;
+  font-size: medium;
+}
+.pod IMG     {
+  vertical-align: top;
+}
+.pod .toc A  {
+  text-decoration: none;
+}
+.pod .toc LI {
+  line-height: 1.2em;
+  list-style-type: none;
+}
+
+--></style>
+</head>
+<body alink="#FF0000" bgcolor="#FFFFFF" link="#000000" text="#000000" vlink="#000066"><a name='_top'></a>
+
+<div class="toc">
+<ul>
+<li><a href='#NAME'>NAME</a>
+<li><a href='#DESCRIPTION'>DESCRIPTION</a>
+<li><a href='#SYNOPSIS'>SYNOPSIS</a>
+<li><a href='#CAVEATS'>CAVEATS</a>
+<li><a href='#SEE-ALSO'>SEE ALSO</a>
+<li><a href='#BUGS'>BUGS</a>
+<li><a href='#AUTHOR'>AUTHOR</a>
+<li><a href='#COPYRIGHT-AND-LICENSE'>COPYRIGHT AND LICENSE</a>
+
+</ul>
+</div>
+
+<div class='pod'><div>
+<a name='NAME'></a><h1>NAME</h1>
+
+<p>Tie::LinkedHash - Ordered Hashes</p>
+<a name='DESCRIPTION'></a><h1>DESCRIPTION</h1>
+
+<p>This module implements an ordered hash using a linked list to track the order
+that keys are entered. Use it when you need to keep the insertion orders of keys
+in a hash.</p>
+<p>Because this module implements a linked list, both inserts and deletes
+are very fast and behaves more like a list. If delete speed is not an issue
+you may consider using <i><a href='http://search.cpan.org/perldoc?Tie::IxHash'>Tie::IxHash</a></i> as an alternative.</p>
+<a name='SYNOPSIS'></a><h1>SYNOPSIS</h1>
+
+<pre>  use Tie::LinkedHash;
+
+  # A new empty hash
+  tie(%x, 'Tie::LinkedHash');
+
+  # A new empty hash with items
+  tie(%y, 'Tie::LinkedHash', "a" =&gt; 1, "b" =&gt; 2);
+
+  # A new empty hash, where all nested hash references are tied to Tie::LinkedHash
+  tie(%z, 'Tie::LinkedHash', { auto_tie =&gt; 1});
+  $z{a} = {}; # the value will be auto tied to Tie::LinkedHash
+  
+  # DO NOT DO THIS if order of the values matter.
+  # The order of the value hash will not be guaranteed. Only subsequent insertions
+  # will be in order!
+  $z{b} = { 'x' =&gt; 1, 'y' =&gt; 2, 'z' =&gt; 3 }
+  
+
+  # To determine the number of keys in the hash (or if the hash has items)
+  # bad, very slow for large hashes!!
+  $bool = scalar keys %hash;
+
+  # scalar context, no issues.
+  if (%hash) { ... }
+
+  # fast way to get size (and if the hash contanis items).
+  $bool = scalar %hash;
+  $bool = (tied %hash)-&gt;size(); # ditto
+
+</pre>
+<a name='CAVEATS'></a><h1>CAVEATS</h1>
+
+<p>Since this implements a linked list, it is a lot more memory intensive than
+using a pure Perl hash. Avoid tie-ing large data structures or enabling <i>auto_tie</i>
+if memory is going to be an issue.</p>
+<p>If <i>auto_tie</i> is enabled and you store a hash reference already with items in it
+there will be no guarantee to the initial key order. All subsequent keys will be
+added in order.</p>
+<a name='SEE-ALSO'></a><h1>SEE ALSO</h1>
+
+<p>See <i><a href='http://search.cpan.org/perldoc?Tie::LLHash'>Tie::LLHash</a></i> for an alternative to this module.</p>
+<p>See <i><a href='http://search.cpan.org/perldoc?Tie::IxHash'>Tie::IxHash</a></i> for a standard ordered hash, with slow deletes.</p>
+<a name='BUGS'></a><h1>BUGS</h1>
+
+<p>You tell me.</p>
+<a name='AUTHOR'></a><h1>AUTHOR</h1>
+
+<p>Jin Cao</p>
+<a name='COPYRIGHT-AND-LICENSE'></a><h1>COPYRIGHT AND LICENSE</h1>
+
+<p>Copyright (C) 2019 by Jin Cao</p>
+<p>This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself.</p>
+
+
+<div></div></body></html>
