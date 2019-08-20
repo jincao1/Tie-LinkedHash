@@ -192,7 +192,7 @@ you may consider using L<Tie::IxHash> as an alternative.
   # scalar context, no issues.
   if (%hash) { ... }
 
-  # fast way to get size (and if the hash contanis items).
+  # fast way to get size (and if the hash contains items).
   $bool = scalar %hash;
   $bool = (tied %hash)->size(); # ditto
 
